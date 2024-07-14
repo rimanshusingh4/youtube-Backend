@@ -31,9 +31,7 @@ router.route('/register').post(
     ]),
     registerUser
 )
-
 router.route('/login').post(loginUser)
-
 // secured Routes..........................................
 
 router.route('/logout').post(verifyJWT, logoutUser)
@@ -46,9 +44,5 @@ router.route('/avatar').patch(verifyJWT, upload.single("avatar"), updateUserAvat
 router.route('/cover-image').patch(verifyJWT, upload.single("coverImage"), updateUserCoverImager)
 router.route('/c/:username').get(verifyJWT, getUserChannelProfile)
 router.route('/history').get(verifyJWT, getWatchHistory)
-
-
-
-
 
 export default router;

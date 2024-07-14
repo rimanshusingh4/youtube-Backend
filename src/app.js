@@ -6,7 +6,8 @@ import morgan from "morgan";
 const app = new express();
 
 const corsOptions ={
-    origin: ["https://youtube-zeta-rose.vercel.app","https://youtube-git-master-rimanshu-singhs-projects.vercel.app","https://youtube-rimanshu-singhs-projects.vercel.app"],
+    // origin: 'http://localhost:5173',
+    origin: ["https://youtube-green-nine.vercel.app","https://youtube-rimanshu-singhs-projects.vercel.app","https://youtube-rimanshu-singhs-projects.vercel.app"],
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
