@@ -1,28 +1,27 @@
-import  apiError  from "../utils/apiError.js";
-import  asyncHandler  from "../utils/asyncHandler.js";
-import jwt from "jsonwebtoken";
-import {User} from "../models/user.model.js"
+import JWT from 'jsonwebtoken';
+import asyncHandler from '../utils/asyncHandler.js';
+import ApiError from '../utils/apiError.js';
+import { User } from '../models/user.model.js';
 
-export const verifyJWT = asyncHandler(async(req, _, next)=>{ // kuch jagah jaha hum res ka use ni krte hai wah ape hum esko (_) se denot kar dete hai.
+export const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
-        // console.log("here is token: ",token)
-        if(!token){
-            throw new apiError(401, "Unauthorized Request");
-        }
-        const decodedeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,)
-        const user = await User.findById(decodedeToken?._id).select(
-            "-password -refreshToken"
-        )
-        if(!user){
-            // discuss about Frontend
-            throw new apiError(401, "Invalid Access Token")
+        const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+
+        if (!accessToken) {
+            throw new ApiError(401, "Unauthorized request");
         }
     
-        req.user = user
-        next()
+        const decodedToken = JWT.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    
+        const user = await User.findById(decodedToken?._id).select(" -password -refreshToken");
+    
+        if (!user) {
+            throw new ApiError(401, "Invalid access token");
+        }
+    
+        req.user = user;
+        next();
     } catch (error) {
-        throw new apiError(401, error?.message || "Invalid Request")
+        throw new ApiError(401, error?.message || "Invalid access token");
     }
-
-})
+});
