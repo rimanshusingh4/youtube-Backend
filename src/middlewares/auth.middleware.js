@@ -6,6 +6,7 @@ import {User} from "../models/user.model.js"
 export const verifyJWT = asyncHandler(async(req, _, next)=>{ // kuch jagah jaha hum res ka use ni krte hai wah ape hum esko (_) se denot kar dete hai.
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+        // console.log("here is token: ",token)
         if(!token){
             throw new apiError(401, "Unauthorized Request");
         }

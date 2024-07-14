@@ -29,7 +29,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         });
     }
 
-    console.log("User ID from video controller:", userId);
+    // console.log("User ID from video controller:", userId);
 
     if (userId) {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -88,7 +88,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     };
 
     const video = await Video.aggregatePaginate(videoAggregate, options);
-    console.log("Video details:", video);
+    // console.log("Video details:", video);
     return res
         .status(200)
         .json(new ApiResponse(200, video, "Videos fetched successfully"));
