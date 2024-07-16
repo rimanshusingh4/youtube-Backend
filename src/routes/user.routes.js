@@ -32,12 +32,12 @@ router.route('/register').post(
     registerUser
 )
 router.route('/login').post(loginUser)
-// secured Routes..........................................
+// secured Routes...........................................
 
 router.route('/logout').post(verifyJWT, logoutUser)
 router.route('/refresh-token').post(refreshAccessToken)
 router.route('/change-password').post(verifyJWT, changeCurrentPassword)
-router.route('/current-user').get(verifyJWT, getCurrentUser)
+router.route('/current-user').get(verifyJWT, getCurrentUser)  
 router.route('/update-account-credentials').patch(verifyJWT, updateAccountDetails) //.patch ka use es liye kyuki hme kuch field update karna tha.
 // nhi to sara field update ho jata .post ya get se.
 router.route('/avatar').patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
