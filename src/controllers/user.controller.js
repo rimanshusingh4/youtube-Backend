@@ -63,6 +63,9 @@ const registerUser = asyncHandler( async (req, res)=>{ // ye hum method banaye h
     if(req.files && Array.isArray(req.files.coverImage) && (req.files.coverImage.length > 0)){
         coverImageLocalPath = req.files.coverImage[0].path;
     }
+    console.log('Avatar Local Path:', avatarLocalPath);
+    console.log('Cover Image Local Path:', coverImageLocalPath);
+
     if (!avatarLocalPath) {
         throw new apiError(400, "Profile Picture is required");
     }

@@ -10,7 +10,15 @@ cloudinary.config({
 const uploadOnCloudinary = async (localFilePath) => {
     console.log(localFilePath);
     try {
-        if (!localFilePath) return null;
+        if (!localFilePath) {
+            console.log('Local file path is null or undefined.');
+            return null;
+        }
+
+        if (!fs.existsSync(localFilePath)) {
+            console.log(`File '${localFilePath}' does not exist.`);
+            return null;
+        }
 
         //upload to cloudinary if localFilePath exists
         const result = await cloudinary.uploader.upload(localFilePath, {
@@ -26,6 +34,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         return error;
     }
 };
+
 
 const deleteOnCloudinary = async (public_id, resource_type="image") => {
     try {
