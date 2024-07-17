@@ -203,7 +203,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
 const getPlaylistById = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
-
+    console.log(playlistId)
     if (!isValidObjectId(playlistId)) {
         throw new ApiError(400, "Invalid PlaylistId");
     }
@@ -264,8 +264,8 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 totalViews: 1,
                 videos: {
                     _id: 1,
-                    "videoFile.url": 1,
-                    "thumbnail.url": 1,
+                    "videoFile": 1,
+                    "thumbnail": 1,
                     title: 1,
                     description: 1,
                     duration: 1,
@@ -275,13 +275,13 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 owner: {
                     username: 1,
                     fullName: 1,
-                    "avatar.url": 1
+                    "avatar": 1
                 }
             }
         }
         
     ]);
-
+    console.log(playlistVideos)
     return res
         .status(200)
         .json(new ApiResponse(200, playlistVideos[0], "playlist fetched successfully"));

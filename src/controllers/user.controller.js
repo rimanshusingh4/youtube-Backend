@@ -290,38 +290,46 @@ const updateAccountDetails = asyncHandler(async(req, res)=>{
 
 })
 
-const updateUserAvatar = asyncHandler(async(req, res)=>{
+const updateUserAvatar = asyncHandler(async(req, res) => {
+    const avatarLocalPath = req.file?.path;
 
-    const avatarLocalPath = req.file?.path
-    if(!avatarLocalPath){
-        throw new apiError(400,"Avatar file is missing")
+    if (!avatarLocalPath) {
+        throw new apiError(400, "Avatar file is missing");
     }
-    const avatar = uploadOnCloudinary(avatarLocalPath)
-    if(!avatar){
-        throw new apiError(400,"Error while uploading file, Avatar")
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if (!avatar.url) {
+        throw new apiError(400, "Error while uploading avatar");
     }
-    const user = await User.findByIdAndUpdate(
+
+    const user = await User.findById(req.user._id).select("avatar");
+
+    const avatarToDelete = user.avatar.public_id;
+
+    const updatedUser = await User.findByIdAndUpdate(
         req.user?._id,
         {
-            $set:{
-                avatar: avatar.url
+            $set: {
+                avatar: {
+                    public_id: avatar.public_id,
+                    url: avatar.url
+                }
             }
         },
-        {new: true}
-    ).select("-password")
+        { new: true }
+    ).select("-password");
 
-    // TODO-> Delete old avatar image from cloudinary
+    if (avatarToDelete && updatedUser.avatar.public_id) {
+        await deleteOnCloudinary(avatarToDelete);
+    }
 
-    return res.status(200)
-    .json(
-        new ApiResponce(
-            200,
-            user,
-            "Avatar update Successfully"
+    return res
+        .status(200)
+        .json(
+            new ApiResponce(200, updatedUser, "Avatar update successfull")
         )
-    )
-
-})
+});
 const updateUserCoverImager = asyncHandler(async(req, res)=>{
 
 
@@ -414,7 +422,7 @@ const getUserChannelProfile = asyncHandler(async(req, res)=>{
     if(!channel?.length){
         throw new apiError(400, "Channel does not exist")
     }
-    console.log("Channel Console",channel)
+    // console.log("Channel Console",channel)
 
     return res.status(200)
     .json(
@@ -429,46 +437,46 @@ const getUserChannelProfile = asyncHandler(async(req, res)=>{
 const getWatchHistory = asyncHandler(async(req,res)=>{ // aggrigation use krte time hm mongodb ka id direct _id karke use ni kr sakte kyuki esme wo string form me nhi aata hai.
     const user = await User.aggregate([
         {
-            $match:{
-                _id: new mongoose.Types.ObjectId(req.user._id) //yaha pe hm req.body._id use kar sakte the lekin ye aggregate use ho rha hai es liya esko mongoose ke objectId ke through use krna padga
-            }
+          $match: {
+            _id: new mongoose.Types.ObjectId(req.user._id) // Matching the user by _id
+          }
         },
         {
-            $lookup:{ // es lokup se hme videos ka sara document mi gaya, but owner ek khud me document hai es liye hm nested use karege.
-                from: " Video",
-                localField: "watchHistory",
-                foreignField: "_id",
-                as: "watchHistory",
-                pipeline:[
+          $lookup: {
+            from: "videos",
+            localField: "watchHistory",
+            foreignField: "_id",
+            as: "watchHistory",
+            pipeline: [
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "owner",
+                  foreignField: "_id",
+                  as: "owner",
+                  pipeline: [
                     {
-                        $lookup: { // es wale lookup se hm owner document me ghus gye.
-                            from: "users",
-                            localField: "owner",
-                            foreignField: "_id",
-                            as: "owner",
-                            pipeline:[ // owner field me bhi bahut data hoga hme sb toh chahiye nhi es liye hum Project ka use karke data apne accprding le lenge
-                                {
-                                    $project:{ // eska use karne hm wahi data select krte hai jiski hme jarurat hoti hai.
-                                        fullName: 1,
-                                        username: 1,
-                                        avatar: 1,
-                                        // watchHistory: 1
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        $addFields:{
-                            owner: {
-                                $first: "$owner",
-                            }
-                        }
+                      $project: { // Specify the fields you want to include
+                        fullName: 1,
+                        username: 1,
+                        avatar: 1,
+                        watchHistory: 1 // Ensure to include all needed fields explicitly
+                      }
                     }
-                ]
-            }
+                  ]
+                }
+              },
+              {
+                $addFields: {
+                  owner: {
+                    $first: "$owner"
+                  }
+                }
+              }
+            ]
+          }
         }
-    ])
+      ]);      
     return res.status(200)
     .json(
         new ApiResponce(
@@ -478,7 +486,6 @@ const getWatchHistory = asyncHandler(async(req,res)=>{ // aggrigation use krte t
         )
     )
 })
-
 
 export {
     registerUser,

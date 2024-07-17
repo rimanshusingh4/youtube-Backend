@@ -8,7 +8,7 @@ cloudinary.config({
 });
 
 const uploadOnCloudinary = async (localFilePath) => {
-    console.log(localFilePath);
+    // console.log(localFilePath);
     try {
         if (!localFilePath) {
             console.log('Local file path is null or undefined.');
