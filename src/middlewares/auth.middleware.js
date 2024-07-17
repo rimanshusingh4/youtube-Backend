@@ -5,13 +5,13 @@ import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
-        console.log("requets of cookies is here ",req.cookies);
-        console.log("req of header is here &",req.headers);
+        // console.log("requets of cookies is here ",req.cookies);
+        // console.log("req of header is here &",req.headers);
 
         const token = (req.cookies && req.cookies.accessToken) || 
         (req.header("Authorization") && req.header("Authorization").replace("Bearer ", ""));
   
-        console.log("token is here from Auth middleware",token);
+        // console.log("token is here from Auth middleware",token);
         if (!token) {
             throw new apiError(401, "Unauthorized request")
         }
