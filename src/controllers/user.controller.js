@@ -129,7 +129,8 @@ const loginUser = asyncHandler(async (req,res)=>{
     // cookies send karne se phle kuch option design krna padta hai.
     const options = {
         httpOnly: true,
-        secure: true 
+        secure: true,
+        sameSite: 'none', 
         // ye dono ko true karne se hm esse ye cookies keval server se modify ho sakta hai aisa normally modify ni ho sakta.
     }
     return res
