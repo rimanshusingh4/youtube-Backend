@@ -117,7 +117,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
             },
         },
     ]);
-    console.log("subscribe: ",subscribers)
+    // console.log("subscribe: ",subscribers)
 
     return res
         .status(200)
@@ -175,7 +175,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                     _id: 1,
                     username: 1,
                     fullName: 1,
-                    "avatar.url": 1,
+                    "avatar": 1,
                     latestVideo: {
                         _id: 1,
                         "videoFile.url": 1,

@@ -63,8 +63,8 @@ const registerUser = asyncHandler( async (req, res)=>{ // ye hum method banaye h
     if(req.files && Array.isArray(req.files.coverImage) && (req.files.coverImage.length > 0)){
         coverImageLocalPath = req.files.coverImage[0].path;
     }
-    console.log('Avatar Local Path:', avatarLocalPath);
-    console.log('Cover Image Local Path:', coverImageLocalPath);
+    // console.log('Avatar Local Path:', avatarLocalPath);
+    // console.log('Cover Image Local Path:', coverImageLocalPath);
 
     if (!avatarLocalPath) {
         throw new apiError(400, "Profile Picture is required");
@@ -292,34 +292,32 @@ const updateAccountDetails = asyncHandler(async(req, res)=>{
 
 const updateUserAvatar = asyncHandler(async(req, res) => {
     const avatarLocalPath = req.file?.path;
-
     if (!avatarLocalPath) {
         throw new apiError(400, "Avatar file is missing");
     }
-
     const avatar = await uploadOnCloudinary(avatarLocalPath);
-
     if (!avatar.url) {
         throw new apiError(400, "Error while uploading avatar");
     }
-
-    const user = await User.findById(req.user._id).select("avatar");
-
-    const avatarToDelete = user.avatar.public_id;
-
+    // console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",req.user?._id,)
     const updatedUser = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
                 avatar: {
                     public_id: avatar.public_id,
-                    url: avatar.url
+                    url: avatar.secure_url,
                 }
             }
         },
         { new: true }
     ).select("-password");
+    // console.log("Updated user here",updatedUser)
 
+    const user = await User.findById(req.user._id).select("avatar");
+    const avatarToDelete = user.avatar.public_id;
+    // console.log("avatarToDelete",user)
+    
     if (avatarToDelete && updatedUser.avatar.public_id) {
         await deleteOnCloudinary(avatarToDelete);
     }

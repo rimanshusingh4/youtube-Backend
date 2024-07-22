@@ -26,7 +26,7 @@ const userSchema = new Schema(
             index: true,
         },
         avatar:{
-            type: String, // ye cloudnary ka url use karege.
+            type: [], // ye cloudnary ka url use karege.
             required: true,
         },
         coverImage:{
